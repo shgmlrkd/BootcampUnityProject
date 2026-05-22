@@ -269,6 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e06b546288d505a4bacf108b48e6fcc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraPosition
+  sensitive: 60
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -589,7 +590,7 @@ Transform:
   m_GameObject: {fileID: 873083703}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: -4.24}
+  m_LocalPosition: {x: 0, y: 2, z: -6.15}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -658,6 +659,14 @@ PrefabInstance:
     - target: {fileID: 2246733620454417319, guid: c515f3e5539b8884ea7f2e1a4d94a27c, type: 3}
       propertyPath: m_Name
       value: SidesHazard
+      objectReference: {fileID: 0}
+    - target: {fileID: 2246733620454417319, guid: c515f3e5539b8884ea7f2e1a4d94a27c, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2246733620454417319, guid: c515f3e5539b8884ea7f2e1a4d94a27c, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -732,6 +741,14 @@ PrefabInstance:
     - target: {fileID: 8738196611346897086, guid: 07c0ea4c363724b4c9be66e35eb2e9f5, type: 3}
       propertyPath: m_Name
       value: Turnhole
+      objectReference: {fileID: 0}
+    - target: {fileID: 8738196611346897086, guid: 07c0ea4c363724b4c9be66e35eb2e9f5, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8738196611346897086, guid: 07c0ea4c363724b4c9be66e35eb2e9f5, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -837,6 +854,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: UpHill
       objectReference: {fileID: 0}
+    - target: {fileID: 942272673183471942, guid: e8999d269ed7b3e47b048c17f4115ea5, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 942272673183471942, guid: e8999d269ed7b3e47b048c17f4115ea5, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -855,9 +880,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1075454671}
     m_Modifications:
+    - target: {fileID: 47659509586526439, guid: 1998c21e38ccd7c469ef87eb37027db7, type: 3}
+      propertyPath: m_Convex
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 47659509586526439, guid: 1998c21e38ccd7c469ef87eb37027db7, type: 3}
+      propertyPath: m_ProvidesContacts
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1504790082947926321, guid: 1998c21e38ccd7c469ef87eb37027db7, type: 3}
       propertyPath: m_Name
       value: Turn
+      objectReference: {fileID: 0}
+    - target: {fileID: 1504790082947926321, guid: 1998c21e38ccd7c469ef87eb37027db7, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1504790082947926321, guid: 1998c21e38ccd7c469ef87eb37027db7, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 2281572625917678475, guid: 1998c21e38ccd7c469ef87eb37027db7, type: 3}
       propertyPath: m_LocalScale.x
