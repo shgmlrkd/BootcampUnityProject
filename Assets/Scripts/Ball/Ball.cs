@@ -13,5 +13,7 @@ public class Ball : MonoBehaviour
 
         Move = GetComponent<BallMove>();
         State = GetComponent<BallState>();
+
+        
     }
 }
