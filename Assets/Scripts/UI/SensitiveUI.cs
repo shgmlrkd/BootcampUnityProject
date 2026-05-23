@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Setting : MonoBehaviour
+public class SensitiveUI : MonoBehaviour
 {
     public CameraController CamController;
     private Slider slider;

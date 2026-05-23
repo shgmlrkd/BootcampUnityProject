@@ -1,23 +1,28 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class BallMove : MonoBehaviour
 {
+    private GameObject indicator;
+
     private Ball ball;
 
-    private LineRenderer lineRenderer;
-
-    private Vector3 clickStartPos = Vector3.zero;
-    private Vector3 clickEndPos = Vector3.zero;
+    private Vector3 ballCenterPos = Vector3.zero;
 
     private Vector3 direction = Vector3.zero;
 
-    private const float MAX_HOLD_GAGE = 15.0f;
-    private const float AIM_LINE_LENGTH = 1.2f;
+    private const float MAX_HOLD_GAGE = 30.0f;
+    public float MaxHoldGage
+    {
+        get => MAX_HOLD_GAGE;
+    }
 
-    private float chargeSpeed = 2.5f;
+    private float chargeSpeed = 8.0f;
 
     public float HoldGage { get; set; } = 0.0f;
+
+    private float orbitDistance = 0.3f;
 
     private bool isAiming = false;
     private bool isCharging = false;
@@ -25,12 +30,16 @@ public class BallMove : MonoBehaviour
     private void Awake()
     {
         ball = GetComponent<Ball>();
-        lineRenderer = GetComponent<LineRenderer>();
+
+        indicator = transform.Find("DirectionUI").gameObject;
     }
 
     private void Start()
     {
-        lineRenderer.enabled = false;
+        // 스테이지 별 골프 공의 위치를 받아옴
+        transform.position = GameManager.Instance.GetBallStartPos();
+
+        indicator.SetActive(false);
     }
 
     private void Update()
@@ -43,6 +52,12 @@ public class BallMove : MonoBehaviour
 
         if (ball.State.IsMoving())
         {
+            // 공이 움직이는 중에는 UI가 보이지 않게 처리
+            if (indicator.activeSelf)
+            { 
+                indicator.SetActive(false);
+            }
+
             return;
         }    
 
@@ -50,7 +65,8 @@ public class BallMove : MonoBehaviour
         if(Input.GetMouseButtonDown(0))
         {
             // 공 위치를 시작 지점으로 설정
-            clickStartPos = transform.position;
+            ballCenterPos = transform.position;
+            indicator.SetActive(true);
             isAiming = true;
         }
         
@@ -59,15 +75,13 @@ public class BallMove : MonoBehaviour
         {
             // 게이지를 쌓음
             ChargePower();
-            // 공이 나아갈 방향을 라인으로 보여줌
-            DrawLine();
         }
 
         // 마우스 클릭 땔 때
         if (Input.GetMouseButtonUp(0) && isAiming)
         {
             isAiming = false;
-            lineRenderer.enabled = false;
+            indicator.SetActive(false);
 
             // 마우스 위치를 월드 위치로 변환 후 반환
             Vector3 clickEndPos = GetMouseWorldPosition();
@@ -75,6 +89,45 @@ public class BallMove : MonoBehaviour
             // 공이 나아갈 방향 벡터 (Y축 제외)
             direction = GetDirection(clickEndPos);
         }
+    }
+
+    private void LateUpdate()
+    {
+        // 공이 굴러도 지시계는 회전하지 않게 위치와 회전을 별도 관리
+        if (isAiming && indicator.activeSelf)
+        {
+            UpdateIndicator();
+        }
+    }
+
+    private void UpdateIndicator()
+    {
+        Vector3 currentMousePos = GetMouseWorldPosition();
+
+        // 클릭 끝 시점의 위치에서 공의 중심 위치로 향하는 방향벡터
+        Vector3 dir = ballCenterPos - currentMousePos;
+        dir.y = 0.0f;
+
+        // 충돌이 벗어났을 경우 계산이 불가
+        if (dir == Vector3.zero)
+        { 
+            dir = Vector3.forward; // 기본 방향 설정
+        }
+
+        // 정규화
+        dir = dir.normalized;
+
+        // 자시계의 위치는 구한 방향 벡터에서 일정 거리를 더한 위치가 됨
+        Vector3 orbitPos = transform.position + (dir * orbitDistance);
+
+        indicator.transform.position = orbitPos;
+
+        // Atan2를 쓰면 -180 ~ 180 까지 360도 각도를 라디안 값으로 구할 수 있다.
+        // dir.x, dir.z 순으로 넣으면 z축 기준으로 각도를 구하게 되고
+        // 오일러는 Degree 값을 받기때문에 라디안 값을 Degree로 변환 시켜주고
+        // 자시계의 rotation에 값을 넣어준다.
+        float angle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+        indicator.transform.rotation = Quaternion.Euler(90.0f, angle, 90.0f);
     }
 
     private void FixedUpdate()
@@ -122,36 +175,14 @@ public class BallMove : MonoBehaviour
             return hit.point;
         }
 
-        return clickStartPos;
+        return ballCenterPos;
     }
 
     private Vector3 GetDirection(Vector3 targetPos)
     {
-        Vector3 dir = clickStartPos - targetPos;
+        Vector3 dir = ballCenterPos - targetPos;
         dir.y = 0.0f;
 
         return dir.normalized;
-    }
-
-    private void DrawLine()
-    {
-        // 마우스 클릭 중일 때 현재 마우스 위치를 ray로 월드 좌표 변환
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        Vector3 currentMousePos = clickStartPos; // 기본값
-
-        if (Physics.Raycast(ray, out RaycastHit hit))
-        {
-            currentMousePos = hit.point;
-        }
-
-        // 방향 계산
-        Vector3 dir = (clickStartPos - currentMousePos).normalized;
-        dir.y = 0.0f; // 수평 방향만
-
-        lineRenderer.enabled = true;
-        lineRenderer.positionCount = 2;
-        lineRenderer.SetPosition(0, transform.position);
-        lineRenderer.SetPosition(1, transform.position + dir * AIM_LINE_LENGTH);
     }
 }

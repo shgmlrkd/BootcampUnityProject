@@ -33,5 +33,10 @@ public class BallState : MonoBehaviour
         {
             GameManager.Instance.StageClear();
         }
+
+        if(other.CompareTag("Fall"))
+        {
+            GameManager.Instance.ResetBall();
+        }
     }
 }

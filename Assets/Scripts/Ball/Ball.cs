@@ -14,6 +14,17 @@ public class Ball : MonoBehaviour
         Move = GetComponent<BallMove>();
         State = GetComponent<BallState>();
 
-        
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.Ball = this;
+        }
+    }
+
+    public void ResetPosition(Vector3 pos)
+    {
+        Rb.linearVelocity = Vector3.zero;
+        Rb.angularVelocity = Vector3.zero;
+
+        transform.position = pos;
     }
 }
