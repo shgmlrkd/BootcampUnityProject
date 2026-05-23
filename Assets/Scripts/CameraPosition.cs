@@ -1,12 +1,12 @@
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class CameraPosition : MonoBehaviour
 {
     [SerializeField]
     private float sensitive = 60.0f;
 
-    private Transform golfBallTransform;
+    private Transform ballTransform;
+    private BallState ballState;
 
     private Vector3 camOffset = new Vector3(0.0f, 0.5f, -2.5f);
 
@@ -17,10 +17,15 @@ public class CameraPosition : MonoBehaviour
 
     private float pitch = 0.0f;
     private float yaw = 0.0f;
+    private float savePitch = 0.0f;
+    private float saveYaw = 0.0f;
+
+    private bool isFreeLook = false;
 
     private void Awake()
     {
-        golfBallTransform = GameObject.Find("GolfBall").transform;
+        ballTransform = GameObject.Find("GolfBall").transform;
+        ballState = ballTransform.GetComponent<BallState>();
     }
 
     private void Update()
@@ -30,12 +35,34 @@ public class CameraPosition : MonoBehaviour
         Vector3 camPos = CalculateCameraPosition();
         camPos = ApplyCollision(camPos);
 
-        ApplyCamera(camPos);
+        if(Input.GetKeyDown(KeyCode.H))
+        {
+            isFreeLook = true;
+        }
+
+        if (ballState.IsMoving() || Input.GetKey(KeyCode.H))
+        {
+            ApplyCamera(camPos);
+        }
+
+        if (Input.GetKeyUp(KeyCode.H))
+        {
+            isFreeLook = false;
+
+            savePitch = pitch;
+            saveYaw = yaw;
+        }
+
         DrawDebug();
     }
 
     private void UpdateInput()
     {
+        if(!isFreeLook)
+        {
+            return;
+        }
+
         // 마우스 이동
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
@@ -51,23 +78,26 @@ public class CameraPosition : MonoBehaviour
     // 쿼터니언으로 바꿔주고 카메라 위치를 계산해서 넘김
     private Vector3 CalculateCameraPosition()
     {
-        Quaternion rot = Quaternion.Euler(pitch, yaw, 0.0f);
+        float usePitch = isFreeLook ? pitch : savePitch;
+        float useYaw = isFreeLook ? yaw : saveYaw;
 
-        return golfBallTransform.position + rot * camOffset;
+        Quaternion rot = Quaternion.Euler(usePitch, useYaw, 0.0f);
+
+        return ballTransform.position + rot * camOffset;
     }
 
     private Vector3 ApplyCollision(Vector3 camPos)
     {
         // 카메라 위치에서 골프공으로 향하는 방향벡터
-        Vector3 dir = camPos - golfBallTransform.position;
+        Vector3 dir = camPos - ballTransform.position;
 
         // MAX_DISTANCE 길이의 레이를 쏴서 레이어가
         // 장애물인 오브젝트에 충돌 했는지, 충돌한 위치는 어디인지 bool, RaycastHit hit.point 반환
-        bool hasHit = Physics.Raycast(golfBallTransform.position, dir, 
+        bool hasHit = Physics.Raycast(ballTransform.position, dir, 
             out RaycastHit hit, MAX_DISTANCE, LayerMask.GetMask("Obstacle"));
 
         // 골프공과 카메라의 거리를 구함
-        float camDistance = Vector3.Distance(golfBallTransform.position, camPos);
+        float camDistance = Vector3.Distance(ballTransform.position, camPos);
 
         // 맞았고 거리가 카메라와 골프공 사이의 거리보다 작다면 카메라 위치는 레이 위치
         if (hasHit && camDistance > hit.distance)
@@ -92,6 +122,6 @@ public class CameraPosition : MonoBehaviour
 
         Vector3 dir = rot * camOffset;
 
-        Debug.DrawRay(golfBallTransform.position, dir * MAX_DISTANCE, Color.red);
+        Debug.DrawRay(ballTransform.position, dir * MAX_DISTANCE, Color.red);
     }
 }
