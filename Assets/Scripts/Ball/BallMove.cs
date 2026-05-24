@@ -22,7 +22,7 @@ public class BallMove : MonoBehaviour
 
     public float HoldGage { get; set; } = 0.0f;
 
-    private float orbitDistance = 0.3f;
+    private float orbitDistance = 0.5f;
 
     private bool isAiming = false;
     private bool isCharging = false;
@@ -37,9 +37,25 @@ public class BallMove : MonoBehaviour
     private void Start()
     {
         // 스테이지 별 골프 공의 위치를 받아옴
-        transform.position = GameManager.Instance.GetBallStartPos();
+        if (GameManager.Instance != null)
+        {
+            // Ball 클래스의 초기화 로직을 호출하여 위치와 물리 상태를 동시에 잡음
+            ball.ResetPosition(GameManager.Instance.GetBallStartPos());
+        }
 
         indicator.SetActive(false);
+    }
+
+    private void FixedUpdate()
+    {
+        // 방향이 있고 에이밍이 끝났을 때
+        if (direction != Vector3.zero && !isAiming)
+        {
+            ball.Rb.AddForce(direction * HoldGage, ForceMode.Impulse);
+
+            direction = Vector3.zero;
+            HoldGage = 0.0f;
+        }
     }
 
     private void Update()
@@ -128,18 +144,6 @@ public class BallMove : MonoBehaviour
         // 자시계의 rotation에 값을 넣어준다.
         float angle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
         indicator.transform.rotation = Quaternion.Euler(90.0f, angle, 90.0f);
-    }
-
-    private void FixedUpdate()
-    {
-        // 방향이 있고 에이밍이 끝났을 때
-        if (direction != Vector3.zero && !isAiming)
-        {
-            ball.Rb.AddForce(direction * HoldGage, ForceMode.Impulse);
-
-            direction = Vector3.zero; 
-            HoldGage = 0.0f;
-        }
     }
 
     private void ChargePower()

@@ -20,11 +20,20 @@ public class Ball : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            GameManager.Instance.ResetBall();
+        }
+    }
+
     public void ResetPosition(Vector3 pos)
     {
         Rb.linearVelocity = Vector3.zero;
         Rb.angularVelocity = Vector3.zero;
 
-        transform.position = pos;
+        transform.position = pos; 
+        Rb.position = pos;
     }
 }

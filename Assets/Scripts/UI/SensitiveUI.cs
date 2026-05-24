@@ -16,10 +16,17 @@ public class SensitiveUI : MonoBehaviour
 
         slider.minValue = MIN_SENSITIVE;
         slider.maxValue = MAX_SENSITIVE;
+    }
 
+    private void Start()
+    {
         slider.value = CamController.Move.Sensitive;
 
         slider.onValueChanged.AddListener(ChangeSensitive);
+    }
+    private void OnDestroy()
+    {
+        slider.onValueChanged.RemoveListener(ChangeSensitive);
     }
 
     private void ChangeSensitive(float value)

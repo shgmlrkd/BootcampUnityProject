@@ -8,7 +8,7 @@ public class CameraMove : MonoBehaviour
     private Transform ball;
     private BallState ballState;
 
-    private Vector3 offset = new Vector3(0.0f, 0.5f, -2.5f);
+    private Vector3 offset = new Vector3(0.0f, 0.5f, -3.5f);
 
     private const float MIN_PITCH = -25.0f;
     private const float MAX_PITCH = 60.0f;
